@@ -34,8 +34,8 @@ namespace Journal_be.Controllers
         [HttpPost]
         public async Task<ActionResult<TblUser>> AddCustomer(TblUser user)
         {
-            /*if (_journalContext.TblUsers.Any(u => u.UserName == user.UserName))
-                return BadRequest("Username is duplicate");*/
+            if (_journalContext.TblUsers.Any(u => u.UserName == user.UserName))
+                return BadRequest("Username is duplicate");
             try
             {
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
