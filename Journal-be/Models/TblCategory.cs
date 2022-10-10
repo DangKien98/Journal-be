@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Journal_be.Models
 {
@@ -12,7 +13,7 @@ namespace Journal_be.Models
 
         public int Id { get; set; }
         public string? CategoryName { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<TblArticle> TblArticles { get; set; }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using Journal_be.EndPointController;
+using Journal_be.Entities;
 using Journal_be.Models;
 using Journal_be.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Journal_be.Controllers
 {
@@ -31,6 +34,45 @@ namespace Journal_be.Controllers
             return Ok(new { tokenString });
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TblUser>>> GetAll()
+        {
+            try
+            {
+                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreateTimed, u.Address, u.RoleId, r.RoleName\r\n" +
+                    "FROM tblUser AS u\r\n" +
+                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id";
+                var users = _journalContext.UserEntities.FromSqlRaw(query);
+                return Ok(users);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TblUser>> GetUser(int id)
+        {
+            try
+            {
+                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreateTimed, u.Address, u.RoleId, r.RoleName\r\n" +
+                    "FROM tblUser AS u\r\n" +
+                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
+                    "WHERE u.Id = @Id";
+                var p1 = new SqlParameter("@Id", id);
+                var user = _journalContext.UserEntities.FromSqlRaw(query, p1).SingleOrDefault();
+                if (user == null)
+                    return NotFound("User is not exist");
+
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<TblUser>> AddCustomer(TblUser user)
         {
@@ -48,6 +90,29 @@ namespace Journal_be.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateUser(int id, TblUser user)
+        {
+            try
+            {
+                var userUpdate = await _journalContext.TblUsers.FindAsync(id);
+                if (userUpdate == null)
+                    return NotFound("User is not exist");
+
+                userUpdate.Email = user.Email;
+                userUpdate.Phone = user.Phone;
+                userUpdate.Address = user.Address;
+
+                await _journalContext.SaveChangesAsync();
+
+                return StatusCode(200, "Update Successful");
+            }
+            catch (Exception ex)
+            {
                 return StatusCode(500, ex.Message);
             }
         }

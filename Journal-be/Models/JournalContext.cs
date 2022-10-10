@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Journal_be.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -23,6 +24,8 @@ namespace Journal_be.Models
         public virtual DbSet<TblTransaction> TblTransactions { get; set; } = null!;
         public virtual DbSet<TblTransactionDetail> TblTransactionDetails { get; set; } = null!;
         public virtual DbSet<TblUser> TblUsers { get; set; } = null!;
+        public virtual DbSet<UserEntity> UserEntities { get; set; } = null!;
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
