@@ -18,9 +18,12 @@ namespace Journal_be.Models
         public string? Email { get; set; }
         public string? Phone { get; set; }
         [JsonIgnore]
-        public DateTime? CreateTimed { get; set; }
+        public DateTime? CreatedTime { get; set; }
         public string? Address { get; set; }
         public int? RoleId { get; set; }
+        public int? Status { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         [JsonIgnore]
         public virtual TblRole? Role { get; set; }
         [JsonIgnore]

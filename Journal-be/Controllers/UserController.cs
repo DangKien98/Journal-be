@@ -39,9 +39,10 @@ namespace Journal_be.Controllers
         {
             try
             {
-                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreateTimed, u.Address, u.RoleId, r.RoleName\r\n" +
+                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName, u.Status, u.FirstName, u.LastName\r\n" +
                     "FROM tblUser AS u\r\n" +
-                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id";
+                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" + 
+                    "WHERE u.Status = 1";
                 var users = _journalContext.UserEntities.FromSqlRaw(query);
                 return Ok(users);
             }
@@ -56,10 +57,10 @@ namespace Journal_be.Controllers
         {
             try
             {
-                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreateTimed, u.Address, u.RoleId, r.RoleName\r\n" +
+                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName, u.Status, u.FirstName, u.LastName\r\n" +
                     "FROM tblUser AS u\r\n" +
                     "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
-                    "WHERE u.Id = @Id";
+                    "WHERE u.Status = 1 AND u.Id = @Id";
                 var p1 = new SqlParameter("@Id", id);
                 var user = _journalContext.UserEntities.FromSqlRaw(query, p1).SingleOrDefault();
                 if (user == null)
@@ -81,7 +82,7 @@ namespace Journal_be.Controllers
             try
             {
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-                user.CreateTimed = DateTime.UtcNow.AddHours(7);
+                user.CreatedTime = DateTime.UtcNow.AddHours(7);
                 _journalContext.TblUsers.Add(user);
                 await _journalContext.SaveChangesAsync();
 
@@ -106,6 +107,9 @@ namespace Journal_be.Controllers
                 userUpdate.Email = user.Email;
                 userUpdate.Phone = user.Phone;
                 userUpdate.Address = user.Address;
+                userUpdate.Status = user.Status;
+                userUpdate.FirstName = user.FirstName;
+                userUpdate.LastName = user.LastName;
 
                 await _journalContext.SaveChangesAsync();
 

@@ -24,7 +24,7 @@ namespace Journal_be.Security
                 new Claim("UserName", user.UserName.ToString()),
                 new Claim("Email", user.Email.ToString()),
                 new Claim("Phone", user.Phone.ToString()),
-                new Claim("CreateTimed", user.CreateTimed.ToString()),
+                new Claim("CreatedTime", user.CreatedTime.ToString()),
                 new Claim("Address", user.Address.ToString()),
                 new Claim("RoleId", user.RoleId.ToString())
 

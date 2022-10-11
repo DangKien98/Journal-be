@@ -24,8 +24,8 @@ namespace Journal_be.Models
         public virtual DbSet<TblTransaction> TblTransactions { get; set; } = null!;
         public virtual DbSet<TblTransactionDetail> TblTransactionDetails { get; set; } = null!;
         public virtual DbSet<TblUser> TblUsers { get; set; } = null!;
+        public virtual DbSet<ArticleEntity> ArticleEntities { get; set; } = null!;
         public virtual DbSet<UserEntity> UserEntities { get; set; } = null!;
-
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,6 +48,8 @@ namespace Journal_be.Models
 
                 entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
+                entity.Property(e => e.LastEditedTime).HasColumnType("datetime");
+
                 entity.Property(e => e.Titile).HasMaxLength(120);
 
                 entity.HasOne(d => d.Category)
@@ -58,7 +60,6 @@ namespace Journal_be.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.TblArticles)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblArticle_tblUser");
             });
 
@@ -78,7 +79,6 @@ namespace Journal_be.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.TblPayments)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblPayment_tblUser");
             });
 
@@ -126,11 +126,15 @@ namespace Journal_be.Models
             {
                 entity.ToTable("tblUser");
 
-                entity.Property(e => e.CreateTimed).HasColumnType("datetime");
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
                 entity.Property(e => e.Email)
                     .HasMaxLength(320)
                     .IsUnicode(false);
+
+                entity.Property(e => e.FirstName).HasMaxLength(50);
+
+                entity.Property(e => e.LastName).HasMaxLength(50);
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(255)

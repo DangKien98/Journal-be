@@ -13,6 +13,7 @@ namespace Journal_be.Models
         public int Id { get; set; }
         public string? Name { get; set; }
         public int? PaymentId { get; set; }
+        public int? Status { get; set; }
 
         public virtual TblPayment? Payment { get; set; }
         public virtual ICollection<TblTransactionDetail> TblTransactionDetails { get; set; }
