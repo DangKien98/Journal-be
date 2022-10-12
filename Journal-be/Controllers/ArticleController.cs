@@ -1,8 +1,10 @@
 ﻿using Journal_be.EndPointController;
 using Journal_be.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Journal_be.Controllers
 {
@@ -18,6 +20,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<IEnumerable<TblArticle>>> GetAll()
         {
             try
@@ -37,6 +40,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<TblArticle>> GetArticle(int id)
         {
             try
@@ -60,6 +64,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<TblArticle>> CreateCategory(TblArticle article)
         {
             try

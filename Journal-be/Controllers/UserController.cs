@@ -2,9 +2,11 @@
 using Journal_be.Entities;
 using Journal_be.Models;
 using Journal_be.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Journal_be.Controllers
 {
@@ -24,9 +26,15 @@ namespace Journal_be.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(Login login)
         {
-            var user = _journalContext.TblUsers.SingleOrDefault(u => u.UserName == login.UserName);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
+            string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, r.RoleName AS Role, u.Status, u.FirstName, u.LastName\r\n" +
+                    "FROM tblUser AS u\r\n" +
+                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
+                    "WHERE u.Status = 1 AND u.Id = @Id";
+            var userLogin = _journalContext.TblUsers.SingleOrDefault(u => u.UserName == login.UserName);
+            if (userLogin == null || !BCrypt.Net.BCrypt.Verify(login.Password, userLogin.Password))
                 return StatusCode(401, "Username or Password is incorrect");
+            var p1 = new SqlParameter("@Id", userLogin.Id);
+            var user = _journalContext.UserEntities.FromSqlRaw(query, p1).SingleOrDefault();
 
             TokenJwt tokenJwt = new TokenJwt(_configuration);
             var tokenString = tokenJwt.GenerateJwtToken(user);
@@ -35,6 +43,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<TblUser>>> GetAll()
         {
             try
@@ -53,6 +62,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<TblUser>> GetUser(int id)
         {
             try
@@ -75,6 +85,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<TblUser>> AddCustomer(TblUser user)
         {
             if (_journalContext.TblUsers.Any(u => u.UserName == user.UserName))
@@ -96,6 +107,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> UpdateUser(int id, TblUser user)
         {
             try

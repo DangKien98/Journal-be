@@ -1,4 +1,5 @@
-﻿using Journal_be.Models;
+﻿using Journal_be.Entities;
+using Journal_be.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,7 +15,7 @@ namespace Journal_be.Security
             _configuration = config;
         }
 
-        public string GenerateJwtToken(TblUser user)
+        public string GenerateJwtToken(UserEntity user)
         {
             var claims = new[]
             {
@@ -26,7 +27,9 @@ namespace Journal_be.Security
                 new Claim("Phone", user.Phone.ToString()),
                 new Claim("CreatedTime", user.CreatedTime.ToString()),
                 new Claim("Address", user.Address.ToString()),
-                new Claim("RoleId", user.RoleId.ToString())
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("FirstName", user.FirstName.ToString()),
+                new Claim("LastName", user.LastName.ToString())
 
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

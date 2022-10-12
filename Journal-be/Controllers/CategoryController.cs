@@ -1,6 +1,8 @@
 ﻿using Journal_be.EndPointController;
 using Journal_be.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace Journal_be.Controllers
 {
@@ -16,6 +18,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<IEnumerable<TblCategory>>> GetAll()
         {
             try
@@ -31,6 +34,7 @@ namespace Journal_be.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<TblCategory>> GetCategory(int id)
         {
             var category = await _journalContext.TblCategories.FindAsync(id);
@@ -41,6 +45,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<TblCategory>> CreateCategory(TblCategory category)
         {
             try
@@ -58,6 +63,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateCategory(int id, TblCategory category)
         {
             try
@@ -80,6 +86,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<TblCategory>> DeleteCategory(int id)
         {
             try

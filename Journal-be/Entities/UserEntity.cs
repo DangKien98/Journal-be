@@ -8,8 +8,7 @@
         public string? Phone { get; set; }
         public DateTime? CreatedTime { get; set; }
         public string? Address { get; set; }
-        public int? RoleId { get; set; }
-        public string? RoleName { get; set; }
+        public string? Role { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
     }
