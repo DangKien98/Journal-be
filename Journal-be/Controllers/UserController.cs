@@ -85,7 +85,6 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<TblUser>> AddCustomer(TblUser user)
         {
             if (_journalContext.TblUsers.Any(u => u.UserName == user.UserName))
