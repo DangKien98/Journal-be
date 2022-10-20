@@ -29,7 +29,8 @@ namespace Journal_be.Security
                 new Claim("Address", user.Address.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim("FirstName", user.FirstName.ToString()),
-                new Claim("LastName", user.LastName.ToString())
+                new Claim("LastName", user.LastName.ToString()),
+                new Claim("Image", user.Image.ToString())
 
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

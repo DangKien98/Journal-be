@@ -26,7 +26,7 @@ namespace Journal_be.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(Login login)
         {
-            string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, r.RoleName AS Role, u.Status, u.FirstName, u.LastName\r\n" +
+            string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, r.RoleName AS Role, u.Status, u.FirstName, u.LastName, u.Image\r\n" +
                     "FROM tblUser AS u\r\n" +
                     "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
                     "WHERE u.Status = 1 AND u.Id = @Id";
@@ -48,7 +48,7 @@ namespace Journal_be.Controllers
         {
             try
             {
-                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName, u.Status, u.FirstName, u.LastName\r\n" +
+                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName, u.Status, u.FirstName, u.LastName, u.Image\r\n" +
                     "FROM tblUser AS u\r\n" +
                     "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" + 
                     "WHERE u.Status = 1";
@@ -67,7 +67,7 @@ namespace Journal_be.Controllers
         {
             try
             {
-                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName, u.Status, u.FirstName, u.LastName\r\n" +
+                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName, u.Status, u.FirstName, u.LastName, u.Image\r\n" +
                     "FROM tblUser AS u\r\n" +
                     "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
                     "WHERE u.Status = 1 AND u.Id = @Id";
