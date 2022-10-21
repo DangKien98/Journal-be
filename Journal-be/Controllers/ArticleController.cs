@@ -20,7 +20,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet("status/{status}")]
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<IEnumerable<TblArticle>>> GetAll(int status)
         {
             try
@@ -82,6 +82,36 @@ namespace Journal_be.Controllers
                 return StatusCode(500, e.Message);
             }
 
+        }
+
+        [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin, User")]
+        public async Task<ActionResult> UpdateArticle(int id, TblArticle article)
+        {
+            try
+            {
+                var articleUpdate = await _journalContext.TblArticles.FindAsync(id);
+                if (articleUpdate == null)
+                    return NotFound("article is not exist");
+
+                articleUpdate.Titile = article.Titile;
+                articleUpdate.Description = article.Description;
+                articleUpdate.AuthorName = article.AuthorName;
+                articleUpdate.Status = article.Status;
+                articleUpdate.Price = article.Price;
+                articleUpdate.UserId = article.UserId;
+                articleUpdate.CategoryId = article.CategoryId;
+                articleUpdate.Image = article.Image;
+                articleUpdate.LastEditedTime = DateTime.UtcNow.AddHours(7);
+
+                await _journalContext.SaveChangesAsync();
+
+                return Ok(new {Status = "Success", Message = "Update Successful!"});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
