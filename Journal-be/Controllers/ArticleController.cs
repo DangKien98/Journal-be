@@ -50,7 +50,7 @@ namespace Journal_be.Controllers
                     "FROM tblArticle AS a\r\n" +
                     "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
                     "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
-                    "WHERE a.Status = 1 AND a.Id = @Id";
+                    "WHERE a.Id = @Id";
                 var p1 = new SqlParameter("@Id", id);
                 var artcle = _journalContext.ArticleEntities.FromSqlRaw(query, p1).FirstOrDefault();
                 if (artcle == null)
