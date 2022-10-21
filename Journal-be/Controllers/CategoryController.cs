@@ -2,6 +2,8 @@
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Journal_be.Controllers
@@ -24,7 +26,23 @@ namespace Journal_be.Controllers
             try
             {
                 var categories = _journalContext.TblCategories.ToList();
-                return Ok(categories);
+                if (categories == null)
+                    return NotFound(new { Status = "Failed", Message = "Can not find any Category" });
+                List<object> listArticles = new List<object>();
+                foreach (var category in categories)
+                {
+                    string query = "SELECT a.Id, a.Titile, a.CreatedTime, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
+                    "FROM tblArticle AS a\r\n" +
+                    "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
+                    "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
+                    "WHERE a.CategoryID = @Id";
+                    var p1 = new SqlParameter("@Id", category.Id);
+                    var articles = _journalContext.ArticleEntities.FromSqlRaw(query, p1).ToList();
+                    object value = new { category = category, articles = articles };
+                    listArticles.Add(value);
+                }
+
+                return Ok(listArticles);
             }
             catch (Exception e)
             {
@@ -39,9 +57,17 @@ namespace Journal_be.Controllers
         {
             var category = await _journalContext.TblCategories.FindAsync(id);
             if (category == null)
-                return NotFound("Category is not exist");
+                return NotFound(new { Status = "Failed", Message = "Category is not exist" });
+            string query = "SELECT a.Id, a.Titile, a.CreatedTime, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
+            "FROM tblArticle AS a\r\n" +
+            "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
+            "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
+            "WHERE a.CategoryID = @Id";
+            var p1 = new SqlParameter("@Id", category.Id);
+            var articles = _journalContext.ArticleEntities.FromSqlRaw(query, p1).ToList();
+            object value = new { category = category, articles = articles };
 
-            return Ok(category);
+            return Ok(value);
         }
 
         [HttpPost]

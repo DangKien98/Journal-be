@@ -19,9 +19,9 @@ namespace Journal_be.Controllers
             _journalContext = journalContext;
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<IEnumerable<TblArticle>>> GetAll()
+        [HttpGet("status/{status}")]
+        //[Authorize(Roles = "Admin, User")]
+        public async Task<ActionResult<IEnumerable<TblArticle>>> GetAll(int status)
         {
             try
             {
@@ -29,8 +29,9 @@ namespace Journal_be.Controllers
                     "FROM tblArticle AS a\r\n" +
                     "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
                     "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
-                    "WHERE a.Status = 1";
-                var articles = _journalContext.ArticleEntities.FromSqlRaw(query);
+                    "WHERE a.Status = @Status";
+                var p1 = new SqlParameter("@Status", status);
+                var articles = _journalContext.ArticleEntities.FromSqlRaw(query, p1).ToList();
                 return Ok(articles);
             }
             catch (Exception e)
@@ -51,7 +52,7 @@ namespace Journal_be.Controllers
                     "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
                     "WHERE a.Status = 1 AND a.Id = @Id";
                 var p1 = new SqlParameter("@Id", id);
-                var artcle = _journalContext.ArticleEntities.FromSqlRaw(query, p1).SingleOrDefault();
+                var artcle = _journalContext.ArticleEntities.FromSqlRaw(query, p1).FirstOrDefault();
                 if (artcle == null)
                     return NotFound("Article is not exist");
 
@@ -74,7 +75,7 @@ namespace Journal_be.Controllers
                 _journalContext.TblArticles.Add(article);
                 await _journalContext.SaveChangesAsync();
 
-                return Ok(CreatedAtAction("GetArticle", new { id = article.Id }, article));
+                return Ok(new {Status = "Success", Message = "Create Successful"});
             }
             catch (Exception e)
             {
