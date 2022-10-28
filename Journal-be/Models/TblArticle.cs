@@ -21,7 +21,7 @@ namespace Journal_be.Models
         public double? Price { get; set; }
         public int? UserId { get; set; }
         public int? CategoryId { get; set; }
-        public string? Image { get; set; }
+        public byte[]? ArtFile { get; set; }
         [JsonIgnore]
         public DateTime? LastEditedTime { get; set; }
         [JsonIgnore]

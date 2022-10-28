@@ -24,6 +24,7 @@ namespace Journal_be.Models
         public virtual DbSet<TblTransaction> TblTransactions { get; set; } = null!;
         public virtual DbSet<TblTransactionDetail> TblTransactionDetails { get; set; } = null!;
         public virtual DbSet<TblUser> TblUsers { get; set; } = null!;
+        public virtual DbSet<TestFile> TestFiles { get; set; } = null!;
         public virtual DbSet<ArticleEntity> ArticleEntities { get; set; } = null!;
         public virtual DbSet<UserEntity> UserEntities { get; set; } = null!;
 
@@ -41,6 +42,8 @@ namespace Journal_be.Models
             modelBuilder.Entity<TblArticle>(entity =>
             {
                 entity.ToTable("tblArticle");
+
+                entity.Property(e => e.ArtFile).HasColumnName("artFile");
 
                 entity.Property(e => e.AuthorName).HasMaxLength(50);
 
@@ -152,6 +155,13 @@ namespace Journal_be.Models
                     .WithMany(p => p.TblUsers)
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("FK_tblUser_tblRole1");
+            });
+
+            modelBuilder.Entity<TestFile>(entity =>
+            {
+                entity.ToTable("testFile");
+
+                entity.Property(e => e.Filene).HasColumnName("filene");
             });
 
             OnModelCreatingPartial(modelBuilder);

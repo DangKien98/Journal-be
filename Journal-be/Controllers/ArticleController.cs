@@ -101,7 +101,7 @@ namespace Journal_be.Controllers
                 articleUpdate.Price = article.Price;
                 articleUpdate.UserId = article.UserId;
                 articleUpdate.CategoryId = article.CategoryId;
-                articleUpdate.Image = article.Image;
+                articleUpdate.ArtFile = article.ArtFile;
                 articleUpdate.LastEditedTime = DateTime.UtcNow.AddHours(7);
 
                 await _journalContext.SaveChangesAsync();

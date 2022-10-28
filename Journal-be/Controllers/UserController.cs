@@ -144,6 +144,7 @@ namespace Journal_be.Controllers
                 userUpdate.Status = user.Status;
                 userUpdate.FirstName = user.FirstName;
                 userUpdate.LastName = user.LastName;
+                userUpdate.Image = user.Image;
 
                 await _journalContext.SaveChangesAsync();
 
