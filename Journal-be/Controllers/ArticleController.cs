@@ -25,7 +25,7 @@ namespace Journal_be.Controllers
         {
             try
             {
-                string query = "SELECT a.Id, a.Titile, a.CreatedTime, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
+                string query = "SELECT a.Id, a.Title, a.CreatedDate, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
                     "FROM tblArticle AS a\r\n" +
                     "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
                     "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
@@ -46,7 +46,7 @@ namespace Journal_be.Controllers
         {
             try
             {
-                string query = "SELECT a.Id, a.Titile, a.CreatedTime, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
+                string query = "SELECT a.Id, a.Title, a.CreatedDate, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
                     "FROM tblArticle AS a\r\n" +
                     "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
                     "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
@@ -70,12 +70,12 @@ namespace Journal_be.Controllers
         {
             try
             {
-                article.CreatedTime = DateTime.UtcNow.AddHours(7);
+                article.CreatedDate = DateTime.UtcNow.AddHours(7);
                 article.LastEditedTime = DateTime.UtcNow.AddHours(7);
                 _journalContext.TblArticles.Add(article);
                 await _journalContext.SaveChangesAsync();
 
-                return Ok(new {Status = "Success", Message = "Create Successful"});
+                return Ok(new { Status = "Success", Message = "Create Successful" });
             }
             catch (Exception e)
             {
@@ -94,7 +94,7 @@ namespace Journal_be.Controllers
                 if (articleUpdate == null)
                     return NotFound("article is not exist");
 
-                articleUpdate.Titile = article.Titile;
+                articleUpdate.Title = article.Title;
                 articleUpdate.Description = article.Description;
                 articleUpdate.AuthorName = article.AuthorName;
                 articleUpdate.Status = article.Status;
@@ -106,7 +106,7 @@ namespace Journal_be.Controllers
 
                 await _journalContext.SaveChangesAsync();
 
-                return Ok(new {Status = "Success", Message = "Update Successful!"});
+                return Ok(new { Status = "Success", Message = "Update Successful!" });
             }
             catch (Exception ex)
             {

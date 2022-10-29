@@ -39,13 +39,13 @@ namespace Journal_be.Controllers
 
             try
             {
-/*                TestFile testFile = new TestFile();
+/*                TestFile fileTest = new TestFile();
                 string filePath = @"D:\testpdf.pdf";
                 string filename = Path.GetFileName(filePath);
                 FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                 BinaryReader br = new BinaryReader(fs);
                 byte[] bytes = br.ReadBytes((Int32)fs.Length);
-                testFile.Filene = bytes;
+                testFile.FileTest = bytes;
                 br.Close();
                 fs.Close();*/
 

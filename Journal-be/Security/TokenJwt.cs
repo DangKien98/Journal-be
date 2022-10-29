@@ -22,17 +22,15 @@ namespace Journal_be.Security
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                 new Claim("Id", user.Id.ToString()),
-                new Claim("UserName", user.UserName), 
+                new Claim("UserName", user.UserName),
                 new Claim("Email", user.Email),
                 new Claim("Phone", user.Phone),
                 new Claim("CreatedTime", user.CreatedTime.ToString()),
                 new Claim("Address", user.Address),
-                new Claim("RoleId", user.RoleId.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim("Status", user.Status.ToString()),
                 new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName),
-                new Claim("Image", user.Image)
+                new Claim("LastName", user.LastName)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

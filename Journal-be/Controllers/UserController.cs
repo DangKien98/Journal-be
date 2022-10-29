@@ -24,36 +24,61 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(Login login)
+        public async Task<ActionResult> Login(Login login)
         {
-            string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName AS Role, u.Status, u.FirstName, u.LastName, u.Image\r\n" +
-                    "FROM tblUser AS u\r\n" +
-                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
-                    "WHERE u.Status = 1 AND u.Id = @Id";
-            var userLogin = _journalContext.TblUsers.SingleOrDefault(u => u.UserName == login.UserName);
-            if (userLogin == null || !BCrypt.Net.BCrypt.Verify(login.Password, userLogin.Password))
-                return StatusCode(401, "Username or Password is incorrect");
-            var p1 = new SqlParameter("@Id", userLogin.Id);
-            var user = _journalContext.UserEntities.FromSqlRaw(query, p1).SingleOrDefault();
+            var user = (from u in _journalContext.TblUsers
+                        join r in _journalContext.TblRoles on u.RoleId equals r.Id
+                        where u.UserName == login.UserName
+                        select new UserEntity
+                        {
+                            Id = u.Id,
+                            UserName = u.UserName,
+                            Password = u.Password,
+                            Email = u.Email,
+                            Phone = u.Phone,
+                            CreatedTime = u.CreatedTime,
+                            Address = u.Address,
+                            Status = u.Status,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            Image = u.Image,
+                            Role = r.RoleName
+                        }).FirstOrDefault();
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
+                return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Username or Password is incorrect" }));
 
             TokenJwt tokenJwt = new TokenJwt(_configuration);
             var tokenString = tokenJwt.GenerateJwtToken(user);
 
-            return Ok(new { tokenString });
+            return await Task.FromResult(Ok(new {Status = "Success", Message = "Login Successful", tokenString}));
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<TblUser>>> GetAll()
+        public async Task<ActionResult> GetAll()
         {
             try
             {
-                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName AS Role, u.Status, u.FirstName, u.LastName, u.Image\r\n" +
-                    "FROM tblUser AS u\r\n" +
-                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" + 
-                    "WHERE u.Status = 1";
-                var users = _journalContext.UserEntities.FromSqlRaw(query);
-                return Ok(users);
+                var users = (from u in _journalContext.TblUsers
+                            join r in _journalContext.TblRoles on u.RoleId equals r.Id
+                            where u.Status == 1
+                            select new UserEntity
+                            {
+                                Id = u.Id,
+                                UserName = u.UserName,
+                                Email = u.Email,
+                                Phone = u.Phone,
+                                CreatedTime = u.CreatedTime,
+                                Address = u.Address,
+                                Status = u.Status,
+                                FirstName = u.FirstName,
+                                LastName = u.LastName,
+                                Image = u.Image,
+                                Role = r.RoleName
+                            }).ToList();
+
+                return await Task.FromResult(Ok(users));
             }
             catch (Exception e)
             {
@@ -63,20 +88,33 @@ namespace Journal_be.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<TblUser>> GetUser(int id)
+        public async Task<ActionResult> GetUser(int id)
         {
             try
             {
-                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName AS Role, u.Status, u.FirstName, u.LastName, u.Image\r\n" +
-                    "FROM tblUser AS u\r\n" +
-                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
-                    "WHERE u.Status = 1 AND u.Id = @Id";
-                var p1 = new SqlParameter("@Id", id);
-                var user = _journalContext.UserEntities.FromSqlRaw(query, p1).FirstOrDefault();
-                if (user == null)
-                    return NotFound("User is not exist");
+                var user = (from u in _journalContext.TblUsers
+                            join r in _journalContext.TblRoles on u.RoleId equals r.Id
+                            where u.Id == id
+                            select new UserEntity
+                            {
+                                Id = u.Id,
+                                UserName = u.UserName,
+                                Password = u.Password,
+                                Email = u.Email,
+                                Phone = u.Phone,
+                                CreatedTime = u.CreatedTime,
+                                Address = u.Address,
+                                Status = u.Status,
+                                FirstName = u.FirstName,
+                                LastName = u.LastName,
+                                Image = u.Image,
+                                Role = r.RoleName
+                            }).FirstOrDefault();
 
-                return Ok(user);
+                if (user == null)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "User is not exist" }));
+
+                return await Task.FromResult(Ok(user));
             }
             catch (Exception e)
             {
@@ -86,20 +124,32 @@ namespace Journal_be.Controllers
 
         [HttpGet("role/{id}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<TblUser>> GetUserByRoleId(int id)
+        public async Task<ActionResult> GetUserByRoleId(int id)
         {
             try
             {
-                string query = "SELECT u.Id, u.UserName, u.Email, u.Phone, u.CreatedTime, u.Address, u.RoleId, r.RoleName AS Role, u.Status, u.FirstName, u.LastName, u.Image\r\n" +
-                    "FROM tblUser AS u\r\n" +
-                    "LEFT JOIN tblRole AS r ON u.RoleId = r.Id\r\n" +
-                    "WHERE u.Status = 1 AND u.RoleId = @Id";
-                var p1 = new SqlParameter("@Id", id);
-                var users = _journalContext.UserEntities.FromSqlRaw(query, p1).ToList();
-                if (users == null)
-                    return NotFound("User is not exist");
+                var users = (from u in _journalContext.TblUsers
+                             join r in _journalContext.TblRoles on u.RoleId equals r.Id
+                             where u.Status == 1 && u.RoleId == id
+                             select new UserEntity
+                             {
+                                 Id = u.Id,
+                                 UserName = u.UserName,
+                                 Email = u.Email,
+                                 Phone = u.Phone,
+                                 CreatedTime = u.CreatedTime,
+                                 Address = u.Address,
+                                 Status = u.Status,
+                                 FirstName = u.FirstName,
+                                 LastName = u.LastName,
+                                 Image = u.Image,
+                                 Role = r.RoleName
+                             }).ToList();
 
-                return Ok(users);
+                if (users.Count == 0)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No user is found" }));
+
+                return await Task.FromResult(Ok(users));
             }
             catch (Exception e)
             {
@@ -108,10 +158,10 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TblUser>> AddCustomer(TblUser user)
+        public async Task<ActionResult> AddCustomer(TblUser user)
         {
             if (_journalContext.TblUsers.Any(u => u.UserName == user.UserName))
-                return BadRequest("Username is duplicate");
+                return await Task.FromResult(BadRequest(new { Status = "Fail", Message = "Username is exist" }));
             try
             {
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
@@ -119,11 +169,10 @@ namespace Journal_be.Controllers
                 _journalContext.TblUsers.Add(user);
                 await _journalContext.SaveChangesAsync();
 
-                return Ok(CreatedAtAction("CreateUser", new { id = user.Id }, user));
+                return Ok(new {Status = "Success", Message = "Register Successful"});
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -136,7 +185,7 @@ namespace Journal_be.Controllers
             {
                 var userUpdate = await _journalContext.TblUsers.FindAsync(id);
                 if (userUpdate == null)
-                    return NotFound("User is not exist");
+                    return await Task.FromResult(BadRequest(new { Status = "Fail", Message = "User is not exist" }));
 
                 userUpdate.Email = user.Email;
                 userUpdate.Phone = user.Phone;
@@ -148,7 +197,7 @@ namespace Journal_be.Controllers
 
                 await _journalContext.SaveChangesAsync();
 
-                return StatusCode(200, "Update Successful");
+                return Ok(new { Status = "Success", Message = "Update Successful" });
             }
             catch (Exception ex)
             {
