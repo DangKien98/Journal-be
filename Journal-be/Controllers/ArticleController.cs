@@ -1,4 +1,5 @@
 ﻿using Journal_be.EndPointController;
+using Journal_be.Entities;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,18 +22,37 @@ namespace Journal_be.Controllers
 
         [HttpGet("status/{status}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<IEnumerable<TblArticle>>> GetAll(int status)
+        public async Task<ActionResult> GetByStatus(int status)
         {
             try
             {
-                string query = "SELECT a.Id, a.Title, a.CreatedDate, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
-                    "FROM tblArticle AS a\r\n" +
-                    "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
-                    "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
-                    "WHERE a.Status = @Status";
-                var p1 = new SqlParameter("@Status", status);
-                var articles = _journalContext.ArticleEntities.FromSqlRaw(query, p1).ToList();
-                return Ok(articles);
+                var articles = (from a in _journalContext.TblArticles
+                            join u in _journalContext.TblUsers on a.UserId equals u.Id
+                            join c in _journalContext.TblCategories on a.CategoryId equals c.Id
+                            where a.Status == status
+                            select new ArticleEntity
+                            {
+                                Id = a.Id,
+                                Title = a.Title,
+                                CreatedDate = a.CreatedDate,
+                                Description = a.Description,
+                                AuthorName = a.AuthorName,
+                                Status = a.Status,
+                                Price = a.Price,
+                                ArtFile = a.ArtFile,
+                                LastEditedTime = a.LastEditedTime,
+                                CategoryId = a.CategoryId,
+                                CategoryName = c.CategoryName,
+                                UserId = a.UserId,
+                                Username = u.UserName,
+                                UserFirstName = u.FirstName,
+                                UserLastName = u.LastName,
+                            }).ToList();
+
+                if (articles.Count == 0)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No article is found" }));
+
+                return await Task.FromResult(Ok(articles));
             }
             catch (Exception e)
             {
@@ -42,21 +62,37 @@ namespace Journal_be.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<TblArticle>> GetArticle(int id)
+        public async Task<ActionResult> GetArticle(int id)
         {
             try
             {
-                string query = "SELECT a.Id, a.Title, a.CreatedDate, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
-                    "FROM tblArticle AS a\r\n" +
-                    "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
-                    "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
-                    "WHERE a.Id = @Id";
-                var p1 = new SqlParameter("@Id", id);
-                var artcle = _journalContext.ArticleEntities.FromSqlRaw(query, p1).FirstOrDefault();
-                if (artcle == null)
-                    return NotFound("Article is not exist");
+                var article = (from a in _journalContext.TblArticles
+                                join u in _journalContext.TblUsers on a.UserId equals u.Id
+                                join c in _journalContext.TblCategories on a.CategoryId equals c.Id
+                                where a.Id == id
+                                select new ArticleEntity
+                                {
+                                    Id = a.Id,
+                                    Title = a.Title,
+                                    CreatedDate = a.CreatedDate,
+                                    Description = a.Description,
+                                    AuthorName = a.AuthorName,
+                                    Status = a.Status,
+                                    Price = a.Price,
+                                    ArtFile = a.ArtFile,
+                                    LastEditedTime = a.LastEditedTime,
+                                    CategoryId = a.CategoryId,
+                                    CategoryName = c.CategoryName,
+                                    UserId = a.UserId,
+                                    Username = u.UserName,
+                                    UserFirstName = u.FirstName,
+                                    UserLastName = u.LastName,
+                                }).FirstOrDefault();
 
-                return Ok(artcle);
+                if (article == null)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Article is not exist" }));
+
+                return await Task.FromResult(Ok(article));
             }
             catch (Exception e)
             {
@@ -66,7 +102,7 @@ namespace Journal_be.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<TblArticle>> CreateCategory(TblArticle article)
+        public async Task<ActionResult> CreateArticle(TblArticle article)
         {
             try
             {
@@ -92,7 +128,7 @@ namespace Journal_be.Controllers
             {
                 var articleUpdate = await _journalContext.TblArticles.FindAsync(id);
                 if (articleUpdate == null)
-                    return NotFound("article is not exist");
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Article is not exist" }));
 
                 articleUpdate.Title = article.Title;
                 articleUpdate.Description = article.Description;

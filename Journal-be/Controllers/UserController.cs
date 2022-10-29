@@ -78,6 +78,9 @@ namespace Journal_be.Controllers
                                 Role = r.RoleName
                             }).ToList();
 
+                if (users.Count == 0)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No user is found" }));
+
                 return await Task.FromResult(Ok(users));
             }
             catch (Exception e)

@@ -20,12 +20,12 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TestFile>>> GetAll()
+        public async Task<ActionResult> GetAll()
         {
             try
             {
                 var files = _journalContext.TestFiles.ToList();
-                return Ok(files);
+                return await Task.FromResult(Ok(files));
             }
             catch (Exception e)
             {
@@ -34,7 +34,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TestFile>> CreateCategory(TestFile testFile)
+        public async Task<ActionResult> CreateCategory(TestFile testFile)
         {
 
             try
