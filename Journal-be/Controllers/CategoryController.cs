@@ -1,4 +1,5 @@
 ﻿using Journal_be.EndPointController;
+using Journal_be.Entities;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,28 +22,45 @@ namespace Journal_be.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<IEnumerable<TblCategory>>> GetAll()
+        public async Task<ActionResult> GetAll()
         {
             try
             {
                 var categories = _journalContext.TblCategories.ToList();
-                if (categories == null)
-                    return NotFound(new { Status = "Failed", Message = "Can not find any Category" });
-                List<object> listArticles = new List<object>();
+                if (categories.Count == 0)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No category is found" }));
+
+                List<object> model = new List<object>();
                 foreach (var category in categories)
                 {
-                    string query = "SELECT a.Id, a.Titile, a.CreatedTime, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
-                    "FROM tblArticle AS a\r\n" +
-                    "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
-                    "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
-                    "WHERE a.CategoryID = @Id";
-                    var p1 = new SqlParameter("@Id", category.Id);
-                    var articles = _journalContext.ArticleEntities.FromSqlRaw(query, p1).ToList();
+                    var articles = (from a in _journalContext.TblArticles
+                                    join u in _journalContext.TblUsers on a.UserId equals u.Id
+                                    join c in _journalContext.TblCategories on a.CategoryId equals c.Id
+                                    where a.CategoryId == category.Id
+                                    select new ArticleEntity
+                                    {
+                                        Id = a.Id,
+                                        Title = a.Title,
+                                        CreatedDate = a.CreatedDate,
+                                        Description = a.Description,
+                                        AuthorName = a.AuthorName,
+                                        Status = a.Status,
+                                        Price = a.Price,
+                                        ArtFile = a.ArtFile,
+                                        LastEditedTime = a.LastEditedTime,
+                                        CategoryId = a.CategoryId,
+                                        CategoryName = c.CategoryName,
+                                        UserId = a.UserId,
+                                        Username = u.UserName,
+                                        UserFirstName = u.FirstName,
+                                        UserLastName = u.LastName,
+                                    }).ToList();
+
                     object value = new { category = category, articles = articles };
-                    listArticles.Add(value);
+                    model.Add(value);
                 }
 
-                return Ok(listArticles);
+                return await Task.FromResult(Ok(model));
             }
             catch (Exception e)
             {
@@ -53,33 +71,51 @@ namespace Journal_be.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult<TblCategory>> GetCategory(int id)
+        public async Task<ActionResult> GetCategory(int id)
         {
             var category = await _journalContext.TblCategories.FindAsync(id);
-            if (category == null)
-                return NotFound(new { Status = "Failed", Message = "Category is not exist" });
-            string query = "SELECT a.Id, a.Titile, a.CreatedTime, a.Description, a.AuthorName, a.Status, a.Price, a.UserId, u.UserName, u.FirstName AS UserFirstName, u.LastName AS UserLastName, a.CategoryID, c.CategoryName, a.Image, a.LastEditedTime\r\n" +
-            "FROM tblArticle AS a\r\n" +
-            "LEFT JOIN tblUser AS u ON a.UserId = u.Id\r\n" +
-            "LEFT JOIN tblCategory as c ON a.CategoryID = c.Id\r\n" +
-            "WHERE a.CategoryID = @Id";
-            var p1 = new SqlParameter("@Id", category.Id);
-            var articles = _journalContext.ArticleEntities.FromSqlRaw(query, p1).ToList();
-            object value = new { category = category, articles = articles };
 
-            return Ok(value);
+            if (category == null)
+                return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Category is not exist" }));
+
+            var articles = (from a in _journalContext.TblArticles
+                            join u in _journalContext.TblUsers on a.UserId equals u.Id
+                            join c in _journalContext.TblCategories on a.CategoryId equals c.Id
+                            where a.CategoryId == id
+                            select new ArticleEntity
+                            {
+                                Id = a.Id,
+                                Title = a.Title,
+                                CreatedDate = a.CreatedDate,
+                                Description = a.Description,
+                                AuthorName = a.AuthorName,
+                                Status = a.Status,
+                                Price = a.Price,
+                                ArtFile = a.ArtFile,
+                                LastEditedTime = a.LastEditedTime,
+                                CategoryId = a.CategoryId,
+                                CategoryName = c.CategoryName,
+                                UserId = a.UserId,
+                                Username = u.UserName,
+                                UserFirstName = u.FirstName,
+                                UserLastName = u.LastName,
+                            }).ToList();
+
+            object model = new { category = category, articles = articles };
+
+            return await Task.FromResult(Ok(model));
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<TblCategory>> CreateCategory(TblCategory category)
+        public async Task<ActionResult> CreateCategory(TblCategory category)
         {
             try
             {
                 _journalContext.TblCategories.Add(category);
                 await _journalContext.SaveChangesAsync();
 
-                return Ok(CreatedAtAction("GetCategory", new { id = category.Id }, category));
+                return Ok(new { Status = "Success", Message = "Create Successful" });
             }
             catch (Exception e)
             {
@@ -96,14 +132,13 @@ namespace Journal_be.Controllers
             {
                 var categoryUpdate = await _journalContext.TblCategories.FindAsync(id);
                 if (categoryUpdate == null)
-                    return NotFound("Category is not exist");
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Category is not exist" }));
 
                 categoryUpdate.CategoryName = category.CategoryName;
 
-
                 await _journalContext.SaveChangesAsync();
 
-                return StatusCode(200, "Update Successful");
+                return Ok(new { Status = "Success", Message = "Update Successful" });
             }
             catch (Exception ex)
             {
@@ -119,12 +154,12 @@ namespace Journal_be.Controllers
             {
                 var category = await _journalContext.TblCategories.FindAsync(id);
                 if (category == null)
-                    return NotFound("Category is not exist");
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Category is not exist" }));
 
                 _journalContext.TblCategories.Remove(category);
                 await _journalContext.SaveChangesAsync();
 
-                return StatusCode(200, "Delete Successful");
+                return Ok(new { Status = "Success", Message = "Delete Successful" });
             }
             catch (Exception ex)
             {

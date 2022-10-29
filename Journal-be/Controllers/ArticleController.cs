@@ -127,6 +127,7 @@ namespace Journal_be.Controllers
             try
             {
                 var articleUpdate = await _journalContext.TblArticles.FindAsync(id);
+
                 if (articleUpdate == null)
                     return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Article is not exist" }));
 
