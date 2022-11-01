@@ -1,10 +1,7 @@
 ﻿using Journal_be.EndPointController;
-using Journal_be.Entities;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Journal_be.Controllers
@@ -39,20 +36,9 @@ namespace Journal_be.Controllers
                                     where a.CategoryId == category.Id
                                     select new
                                     {
-                                        Id = a.Id,
-                                        Title = a.Title,
-                                        CreatedDate = a.CreatedDate,
-                                        Description = a.Description,
-                                        Status = a.Status,
-                                        Price = a.Price,
-                                        ArtFile = a.ArtFile,
-                                        LastEditedTime = a.LastEditedTime,
-                                        CategoryId = a.CategoryId,
-                                        CategoryName = c.CategoryName,
-                                        UserId = a.UserId,
-                                        Username = u.UserName,
-                                        UserFirstName = u.FirstName,
-                                        UserLastName = u.LastName,
+                                        a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
+                                        a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
+                                        UserFirstName = u.FirstName, UserLastName = u.LastName
                                     }).ToList();
 
                     object value = new { category = category, articles = articles };
@@ -85,7 +71,7 @@ namespace Journal_be.Controllers
                             {
                                 a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
                                 a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
-                                UserFirstName = u.FirstName, UserLastName = u.LastName,
+                                UserFirstName = u.FirstName, UserLastName = u.LastName
                             }).ToList();
 
             object model = new { category = category, articles = articles };
