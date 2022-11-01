@@ -25,7 +25,6 @@ namespace Journal_be.Models
         public virtual DbSet<TblTransactionDetail> TblTransactionDetails { get; set; } = null!;
         public virtual DbSet<TblUser> TblUsers { get; set; } = null!;
         public virtual DbSet<TestFile> TestFiles { get; set; } = null!;
-        public virtual DbSet<ArticleEntity> ArticleEntities { get; set; } = null!;
         public virtual DbSet<UserEntity> UserEntities { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -52,11 +51,6 @@ namespace Journal_be.Models
                 entity.Property(e => e.ArtFile)
                     .HasColumnType("blob")
                     .HasColumnName("artFile");
-
-                entity.Property(e => e.AuthorName)
-                    .HasMaxLength(50)
-                    .UseCollation("utf8mb3_general_ci")
-                    .HasCharSet("utf8mb3");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -171,7 +165,7 @@ namespace Journal_be.Models
                     .UseCollation("utf8mb3_general_ci")
                     .HasCharSet("utf8mb3");
 
-                entity.Property(e => e.Image).HasColumnType("blob");
+                entity.Property(e => e.Image).HasColumnType("text");
 
                 entity.Property(e => e.LastName)
                     .HasMaxLength(50)

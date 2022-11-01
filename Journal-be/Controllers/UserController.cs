@@ -4,8 +4,6 @@ using Journal_be.Models;
 using Journal_be.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Journal_be.Controllers
@@ -31,17 +29,9 @@ namespace Journal_be.Controllers
                         where u.UserName == login.UserName
                         select new UserEntity
                         {
-                            Id = u.Id,
-                            UserName = u.UserName,
-                            Password = u.Password,
-                            Email = u.Email,
-                            Phone = u.Phone,
-                            CreatedTime = u.CreatedTime,
-                            Address = u.Address,
-                            Status = u.Status,
-                            FirstName = u.FirstName,
-                            LastName = u.LastName,
-                            Image = u.Image,
+                            Id = u.Id, UserName = u.UserName, Password = u.Password, Email = u.Email, Phone = u.Phone,
+                            CreatedTime = u.CreatedTime, Address = u.Address, Status = u.Status,
+                            FirstName = u.FirstName, LastName = u.LastName, Image = u.Image,
                             Role = r.RoleName
                         }).FirstOrDefault();
 
@@ -65,16 +55,9 @@ namespace Journal_be.Controllers
                             where u.Status == 1
                             select new UserEntity
                             {
-                                Id = u.Id,
-                                UserName = u.UserName,
-                                Email = u.Email,
-                                Phone = u.Phone,
-                                CreatedTime = u.CreatedTime,
-                                Address = u.Address,
-                                Status = u.Status,
-                                FirstName = u.FirstName,
-                                LastName = u.LastName,
-                                Image = u.Image,
+                                Id = u.Id, UserName = u.UserName, Email = u.Email, Phone = u.Phone,
+                                CreatedTime = u.CreatedTime, Address = u.Address, Status = u.Status,
+                                FirstName = u.FirstName, LastName = u.LastName, Image = u.Image,
                                 Role = r.RoleName
                             }).ToList();
 
@@ -100,17 +83,9 @@ namespace Journal_be.Controllers
                             where u.Id == id
                             select new UserEntity
                             {
-                                Id = u.Id,
-                                UserName = u.UserName,
-                                Password = u.Password,
-                                Email = u.Email,
-                                Phone = u.Phone,
-                                CreatedTime = u.CreatedTime,
-                                Address = u.Address,
-                                Status = u.Status,
-                                FirstName = u.FirstName,
-                                LastName = u.LastName,
-                                Image = u.Image,
+                                Id = u.Id, UserName = u.UserName, Email = u.Email, Phone = u.Phone,
+                                CreatedTime = u.CreatedTime, Address = u.Address, Status = u.Status,
+                                FirstName = u.FirstName, LastName = u.LastName, Image = u.Image,
                                 Role = r.RoleName
                             }).FirstOrDefault();
 
@@ -136,17 +111,10 @@ namespace Journal_be.Controllers
                              where u.Status == 1 && u.RoleId == id
                              select new UserEntity
                              {
-                                 Id = u.Id,
-                                 UserName = u.UserName,
-                                 Email = u.Email,
-                                 Phone = u.Phone,
-                                 CreatedTime = u.CreatedTime,
-                                 Address = u.Address,
-                                 Status = u.Status,
-                                 FirstName = u.FirstName,
-                                 LastName = u.LastName,
-                                 Image = u.Image,
-                                 Role = r.RoleName
+                                 Id = u.Id, UserName = u.UserName, Email = u.Email, Phone = u.Phone,
+                                CreatedTime = u.CreatedTime, Address = u.Address, Status = u.Status,
+                                FirstName = u.FirstName, LastName = u.LastName, Image = u.Image,
+                                Role = r.RoleName
                              }).ToList();
 
                 if (users.Count == 0)

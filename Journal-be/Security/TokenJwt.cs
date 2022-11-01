@@ -30,7 +30,8 @@ namespace Journal_be.Security
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim("Status", user.Status.ToString()),
                 new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName)
+                new Claim("LastName", user.LastName),
+                new Claim("Image", user.Image)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -23,7 +23,7 @@ namespace Journal_be.Models
         public int? Status { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public byte[]? Image { get; set; }
+        public string? Image { get; set; }
         public int? RoleId { get; set; }
         [JsonIgnore]
         public virtual TblRole? Role { get; set; }

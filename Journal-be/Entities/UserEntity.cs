@@ -16,7 +16,7 @@ namespace Journal_be.Entities
         public int? Status { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public byte[]? Image { get; set; }
+        public string? Image { get; set; }
         public string? Role { get; set; }
     }
 }

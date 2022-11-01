@@ -16,7 +16,6 @@ namespace Journal_be.Models
         [JsonIgnore]
         public DateTime? CreatedDate { get; set; }
         public string? Description { get; set; }
-        public string? AuthorName { get; set; }
         public int? Status { get; set; }
         public float? Price { get; set; }
         public byte[]? ArtFile { get; set; }

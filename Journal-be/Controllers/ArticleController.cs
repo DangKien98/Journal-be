@@ -1,10 +1,7 @@
 ﻿using Journal_be.EndPointController;
-using Journal_be.Entities;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Journal_be.Controllers
@@ -30,23 +27,11 @@ namespace Journal_be.Controllers
                             join u in _journalContext.TblUsers on a.UserId equals u.Id
                             join c in _journalContext.TblCategories on a.CategoryId equals c.Id
                             where a.Status == status
-                            select new ArticleEntity
+                            select new
                             {
-                                Id = a.Id,
-                                Title = a.Title,
-                                CreatedDate = a.CreatedDate,
-                                Description = a.Description,
-                                AuthorName = a.AuthorName,
-                                Status = a.Status,
-                                Price = a.Price,
-                                ArtFile = a.ArtFile,
-                                LastEditedTime = a.LastEditedTime,
-                                CategoryId = a.CategoryId,
-                                CategoryName = c.CategoryName,
-                                UserId = a.UserId,
-                                Username = u.UserName,
-                                UserFirstName = u.FirstName,
-                                UserLastName = u.LastName,
+                                a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
+                                a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
+                                UserFirstName = u.FirstName, UserLastName = u.LastName
                             }).ToList();
 
                 if (articles.Count == 0)
@@ -70,23 +55,11 @@ namespace Journal_be.Controllers
                                 join u in _journalContext.TblUsers on a.UserId equals u.Id
                                 join c in _journalContext.TblCategories on a.CategoryId equals c.Id
                                 where a.Id == id
-                                select new ArticleEntity
+                                select new
                                 {
-                                    Id = a.Id,
-                                    Title = a.Title,
-                                    CreatedDate = a.CreatedDate,
-                                    Description = a.Description,
-                                    AuthorName = a.AuthorName,
-                                    Status = a.Status,
-                                    Price = a.Price,
-                                    ArtFile = a.ArtFile,
-                                    LastEditedTime = a.LastEditedTime,
-                                    CategoryId = a.CategoryId,
-                                    CategoryName = c.CategoryName,
-                                    UserId = a.UserId,
-                                    Username = u.UserName,
-                                    UserFirstName = u.FirstName,
-                                    UserLastName = u.LastName,
+                                    a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
+                                    a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
+                                    UserFirstName = u.FirstName, UserLastName = u.LastName
                                 }).FirstOrDefault();
 
                 if (article == null)
@@ -133,7 +106,6 @@ namespace Journal_be.Controllers
 
                 articleUpdate.Title = article.Title;
                 articleUpdate.Description = article.Description;
-                articleUpdate.AuthorName = article.AuthorName;
                 articleUpdate.Status = article.Status;
                 articleUpdate.Price = article.Price;
                 articleUpdate.UserId = article.UserId;
