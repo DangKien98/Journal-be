@@ -94,7 +94,6 @@ namespace Journal_be.Controllers
         }
 
         [HttpPatch("{id}")]
-        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> UpdateArticle(int id, TblArticle article)
         {
             try

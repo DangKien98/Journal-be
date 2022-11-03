@@ -1,10 +1,6 @@
 ﻿using Journal_be.EndPointController;
 using Journal_be.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace Journal_be.Controllers
 {
@@ -20,12 +16,23 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll()
+        public async Task<ActionResult> DownloadFileById(int id)
         {
             try
             {
-                var files = _journalContext.TestFiles.ToList();
-                return await Task.FromResult(Ok(files));
+                var file = _journalContext.TestFiles.Where(x => x.Id == id).FirstOrDefault();
+                if (file == null)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "File is not exist" }));
+
+                var content = new System.IO.MemoryStream(file.FileTest);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "FileDownloaded.pdf");
+                using(var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                {
+                    await content.CopyToAsync(fileStream);
+                }
+
+
+                return await Task.FromResult(Ok(new { Status = "Success", Message = "Download file Successful", FilePath = path }));
             }
             catch (Exception e)
             {
@@ -34,22 +41,18 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateCategory(TestFile testFile)
+        public async Task<ActionResult> CreateCategory(IFormFile fileData)
         {
 
             try
             {
-/*                TestFile fileTest = new TestFile();
-                string filePath = @"D:\testpdf.pdf";
-                string filename = Path.GetFileName(filePath);
-                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                BinaryReader br = new BinaryReader(fs);
-                byte[] bytes = br.ReadBytes((Int32)fs.Length);
-                testFile.FileTest = bytes;
-                br.Close();
-                fs.Close();*/
-
-                _journalContext.TestFiles.Add(testFile);
+                var fileDetails = new TestFile();
+                using (var stream = new MemoryStream())
+                {
+                    fileData.CopyTo(stream);
+                    fileDetails.FileTest = stream.ToArray();
+                }
+                _journalContext.TestFiles.Add(fileDetails);
                 await _journalContext.SaveChangesAsync();
 
                 return Ok(new { Status = "Success", Message = "Create Successful" });
