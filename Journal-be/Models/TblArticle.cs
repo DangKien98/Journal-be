@@ -23,6 +23,8 @@ namespace Journal_be.Models
         public DateTime? LastEditedTime { get; set; }
         public int? CategoryId { get; set; }
         public int? UserId { get; set; }
+        public int? StatusPost { get; set; }
+        public string? Comment { get; set; }
         [JsonIgnore]
         public virtual TblCategory? Category { get; set; }
         [JsonIgnore]

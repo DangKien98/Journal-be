@@ -22,8 +22,9 @@ namespace Journal_be.Controllers
         public async Task<ActionResult> GetAll()
         {
             try
-            {
-                var categories = _journalContext.TblCategories.ToList();
+            { 
+                var categories = (from c in _journalContext.TblCategories
+                                  select new { c.Id, c.CategoryName }).ToList();
                 if (categories.Count == 0)
                     return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No category is found" }));
 
@@ -58,7 +59,9 @@ namespace Journal_be.Controllers
         [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetCategory(int id)
         {
-            var category = await _journalContext.TblCategories.FindAsync(id);
+            var category = (from c in _journalContext.TblCategories
+                              where c.Id == id
+                              select new { c.Id, c.CategoryName }).FirstOrDefault();
 
             if (category == null)
                 return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Category is not exist" }));

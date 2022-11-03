@@ -31,7 +31,7 @@ namespace Journal_be.Controllers
                             {
                                 a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
                                 a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
-                                UserFirstName = u.FirstName, UserLastName = u.LastName
+                                UserFirstName = u.FirstName, UserLastName = u.LastName, a.StatusPost, a.Comment
                             }).ToList();
 
                 if (articles.Count == 0)
@@ -59,7 +59,7 @@ namespace Journal_be.Controllers
                                 {
                                     a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
                                     a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
-                                    UserFirstName = u.FirstName, UserLastName = u.LastName
+                                    UserFirstName = u.FirstName, UserLastName = u.LastName, a.StatusPost, a.Comment
                                 }).FirstOrDefault();
 
                 if (article == null)
@@ -112,6 +112,8 @@ namespace Journal_be.Controllers
                 articleUpdate.CategoryId = article.CategoryId;
                 articleUpdate.ArtFile = article.ArtFile;
                 articleUpdate.LastEditedTime = DateTime.UtcNow.AddHours(7);
+                articleUpdate.StatusPost = article.StatusPost;
+                articleUpdate.Comment = article.Comment;
 
                 await _journalContext.SaveChangesAsync();
 
