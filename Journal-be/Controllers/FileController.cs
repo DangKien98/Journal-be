@@ -1,6 +1,7 @@
 ﻿using Journal_be.EndPointController;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 
 namespace Journal_be.Controllers
 {
@@ -8,11 +9,13 @@ namespace Journal_be.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
+        private readonly IWebHostEnvironment environment;
         private readonly JournalContext _journalContext;
 
-        public FileController(JournalContext journalContext)
+        public FileController(JournalContext journalContext, IWebHostEnvironment hostEnvironment)
         {
             _journalContext = journalContext;
+            environment = hostEnvironment;
         }
 
         [HttpGet]
@@ -21,29 +24,23 @@ namespace Journal_be.Controllers
             try
             {
                 var file = _journalContext.TestFiles.Where(x => x.Id == id).FirstOrDefault();
-                if (file == null)
-                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "File is not exist" }));
-
+                var memory = new MemoryStream();
                 var content = new System.IO.MemoryStream(file.FileTest);
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "FileDownloaded.pdf");
-                using(var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
-                {
-                    await content.CopyToAsync(fileStream);
-                }
+                await content.CopyToAsync(memory);
+                memory.Position = 0;
 
-
-                return await Task.FromResult(Ok(new { Status = "Success", Message = "Download file Successful", FilePath = path }));
+                return File(memory, "application/octet-stream", "test.pdf");
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 return StatusCode(500, e.Message);
             }
         }
 
+
         [HttpPost]
         public async Task<ActionResult> CreateCategory(IFormFile fileData)
         {
-
             try
             {
                 var fileDetails = new TestFile();
