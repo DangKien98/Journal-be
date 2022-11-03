@@ -31,7 +31,7 @@ namespace Journal_be.Controllers
 
                 return File(memory, "application/octet-stream", "test.pdf");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
