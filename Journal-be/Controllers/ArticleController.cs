@@ -29,7 +29,7 @@ namespace Journal_be.Controllers
                             select new
                             {
                                 a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
-                                a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
+                                a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, a.ArtFileName ,u.UserName,
                                 UserFirstName = u.FirstName, UserLastName = u.LastName, a.StatusPost, a.Comment
                             }).ToList();
 
@@ -56,7 +56,7 @@ namespace Journal_be.Controllers
                                 select new
                                 {
                                     a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
-                                    a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
+                                    a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, a.ArtFileName, u.UserName,
                                     UserFirstName = u.FirstName, UserLastName = u.LastName, a.StatusPost, a.Comment
                                 }).FirstOrDefault();
 
