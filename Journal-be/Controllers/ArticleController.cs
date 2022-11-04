@@ -71,6 +71,31 @@ namespace Journal_be.Controllers
             }
         }
 
+        [HttpGet("file/article/{id}")]
+        public async Task<ActionResult> GetArticleFileById(int id)
+        {
+            try
+            {
+                var article = (from a in _journalContext.TblArticles
+                                where a.Id == id
+                                select new { a.ArtFile, a.ArtFileName }).FirstOrDefault();
+
+                if (article == null)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "Article is not exist" }));
+
+                var memory = new MemoryStream();
+                var content = new System.IO.MemoryStream(article.ArtFile);
+                await content.CopyToAsync(memory);
+                memory.Position = 0;
+
+                return File(memory, "application/octet-stream", article.ArtFileName);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpGet("user/{id}")]
         public async Task<ActionResult> GetArticleByUserId(int id)
         {
