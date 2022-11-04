@@ -18,7 +18,6 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetAll()
         {
             try
@@ -56,7 +55,6 @@ namespace Journal_be.Controllers
 
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetCategory(int id)
         {
             var category = (from c in _journalContext.TblCategories
@@ -83,7 +81,6 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateCategory(TblCategory category)
         {
             try
@@ -123,7 +120,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult<TblCategory>> DeleteCategory(int id)
         {
             try

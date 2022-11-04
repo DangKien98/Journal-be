@@ -18,6 +18,7 @@ namespace Journal_be.Models
         public string? Description { get; set; }
         public int? Status { get; set; }
         public float? Price { get; set; }
+        [JsonIgnore]
         public byte[]? ArtFile { get; set; }
         [JsonIgnore]
         public DateTime? LastEditedTime { get; set; }
@@ -25,6 +26,7 @@ namespace Journal_be.Models
         public int? UserId { get; set; }
         public int? StatusPost { get; set; }
         public string? Comment { get; set; }
+        public string? ArtFileName { get; set; }
         [JsonIgnore]
         public virtual TblCategory? Category { get; set; }
         [JsonIgnore]

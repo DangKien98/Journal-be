@@ -18,7 +18,6 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet("status/{status}")]
-        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetByStatus(int status)
         {
             try
@@ -46,7 +45,6 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetArticle(int id)
         {
             try
@@ -73,12 +71,44 @@ namespace Journal_be.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Admin, User")]
-        public async Task<ActionResult> CreateArticle(TblArticle article)
+        [HttpGet("user/{id}")]
+        public async Task<ActionResult> GetArticleByUserId(int id)
         {
             try
             {
+                var articles = (from a in _journalContext.TblArticles
+                                join u in _journalContext.TblUsers on a.UserId equals u.Id
+                                join c in _journalContext.TblCategories on a.CategoryId equals c.Id
+                                where u.Id == id
+                                select new
+                                {
+                                    a.Id, a.Title, a.CreatedDate, a.Description, a.Status, a.Price, a.ArtFile,
+                                    a.LastEditedTime, a.CategoryId, c.CategoryName, a.UserId, u.UserName,
+                                    UserFirstName = u.FirstName, UserLastName = u.LastName, a.StatusPost, a.Comment
+                                }).ToList();
+
+                if (articles.Count == 0)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No article is found" }));
+
+                return await Task.FromResult(Ok(articles));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost]
+        /*[Authorize(Roles = "Admin, User")]*/
+        public async Task<ActionResult> CreateArticle(IFormFile fileData, [FromForm] TblArticle article)
+        {
+            try
+            {
+                using (var stream = new MemoryStream())
+                {
+                    fileData.CopyTo(stream);
+                    article.ArtFile = stream.ToArray();
+                }
                 article.CreatedDate = DateTime.UtcNow.AddHours(7);
                 article.LastEditedTime = DateTime.UtcNow.AddHours(7);
                 _journalContext.TblArticles.Add(article);

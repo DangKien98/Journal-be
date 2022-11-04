@@ -27,7 +27,6 @@ namespace Journal_be.Models
         public virtual DbSet<TestFile> TestFiles { get; set; } = null!;
         public virtual DbSet<UserEntity> UserEntities { get; set; } = null!;
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -52,6 +51,10 @@ namespace Journal_be.Models
                 entity.Property(e => e.ArtFile)
                     .HasColumnType("blob")
                     .HasColumnName("artFile");
+
+                entity.Property(e => e.ArtFileName)
+                    .HasColumnType("text")
+                    .HasColumnName("artFileName");
 
                 entity.Property(e => e.Comment)
                     .HasColumnType("text")
@@ -193,7 +196,7 @@ namespace Journal_be.Models
             {
                 entity.ToTable("testFile");
 
-                entity.Property(e => e.FileTest).HasColumnType("blob");
+                entity.Property(e => e.FileTest).HasColumnType("mediumblob");
             });
 
             OnModelCreatingPartial(modelBuilder);

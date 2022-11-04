@@ -9,13 +9,11 @@ namespace Journal_be.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private readonly IWebHostEnvironment environment;
         private readonly JournalContext _journalContext;
 
-        public FileController(JournalContext journalContext, IWebHostEnvironment hostEnvironment)
+        public FileController(JournalContext journalContext)
         {
             _journalContext = journalContext;
-            environment = hostEnvironment;
         }
 
         [HttpGet]
