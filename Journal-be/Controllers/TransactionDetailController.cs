@@ -1,4 +1,5 @@
 ﻿using Journal_be.EndPointController;
+using Journal_be.Entities;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,28 @@ namespace Journal_be.Controllers
                 return StatusCode(500, e.Message);
             }
 
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult> GetTransactionById(CheckEntity check)
+        {
+            try
+            {
+                var transactionDetails = (from td in _journalContext.TblTransactionDetails
+                                          join t in _journalContext.TblTransactions on td.TransactionId equals t.Id
+                                          join p in _journalContext.TblPayments on t.PaymentId equals p.Id
+                                          where td.ArticleId == check.ArticleId && p.UserId == check.UserId
+                                          select new {td.ArticleId, p.UserId }).FirstOrDefault();
+                if (transactionDetails != null)
+                    return await Task.FromResult(Ok(new { Status = "Success", Message = "User bought this article"}));
+                else
+                    return await Task.FromResult(Ok(new { Status = "Fail", Message = "User did not buy this article" }));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }
