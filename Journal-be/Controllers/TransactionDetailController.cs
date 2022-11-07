@@ -37,8 +37,8 @@ namespace Journal_be.Controllers
 
         }
 
-        [HttpGet("check")]
-        [Authorize(Roles = "User")]
+        [HttpPost("check")]
+        //[Authorize(Roles = "User")]
         public async Task<ActionResult> GetTransactionById(CheckEntity check)
         {
             try
@@ -51,7 +51,7 @@ namespace Journal_be.Controllers
                 if (transactionDetails != null)
                     return await Task.FromResult(Ok(new { Status = "Success", Message = "User bought this article"}));
                 else
-                    return await Task.FromResult(Ok(new { Status = "Fail", Message = "User did not buy this article" }));
+                    return await Task.FromResult(Ok(new { Status = "Fail", Message = "This user did not buy this article" }));
             }
             catch (Exception e)
             {
