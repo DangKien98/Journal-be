@@ -37,7 +37,7 @@ namespace Journal_be.Controllers
 
         }
 
-        [HttpGet]
+        [HttpGet("check")]
         [Authorize(Roles = "User")]
         public async Task<ActionResult> GetTransactionById(CheckEntity check)
         {
