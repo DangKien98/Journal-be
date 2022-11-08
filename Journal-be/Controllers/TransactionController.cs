@@ -17,7 +17,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetTransactions()
         {
             try
