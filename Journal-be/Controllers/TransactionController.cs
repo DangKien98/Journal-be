@@ -17,7 +17,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetTransactions()
         {
             try
@@ -38,6 +38,7 @@ namespace Journal_be.Controllers
                 foreach (var transaction in transactions)
                 {
                     var transactionDetails = (from td in _journalContext.TblTransactionDetails
+                                              where td.TransactionId == transaction.Id
                                             select new
                                             {
                                                 td.Id, td.Name, td.Description, td.Status, td.CreatedTime,
