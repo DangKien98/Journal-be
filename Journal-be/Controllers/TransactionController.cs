@@ -1,4 +1,5 @@
 ﻿using Journal_be.EndPointController;
+using Journal_be.Entities;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,28 +28,15 @@ namespace Journal_be.Controllers
                                     join u in _journalContext.TblUsers on p.UserId equals u.Id
                                     select new
                                     {
-                                        t.Id, t.Status, PaymentId = p.Id, p.Method, p.UserId, u.UserName,
-                                        UserFirstName = u.FirstName, UserLastName = u.LastName
+                                        t.Id, t.Status, PaymentId = p.Id, t.Description, t.CreatedDate, t.ArticleId, 
+                                        p.Method, p.UserId, u.UserName, UserFirstName = u.FirstName, 
+                                        UserLastName = u.LastName
                                     }).ToList();
 
                 if (transactions.Count == 0)
                     return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No transaction is found" }));
 
-                List<object> model = new List<object>();
-                foreach (var transaction in transactions)
-                {
-                    var transactionDetails = (from td in _journalContext.TblTransactionDetails
-                                              where td.TransactionId == transaction.Id
-                                            select new
-                                            {
-                                                td.Id, td.Name, td.Description, td.Status, td.CreatedTime,
-                                                td.TransactionId, td.ArticleId
-                                            }).ToList();
-                    object value = new { transaction, transactionDetails };
-                    model.Add(value);
-                }
-
-                return await Task.FromResult(Ok(model));
+                return await Task.FromResult(Ok(transactions));
             }
             catch (Exception e)
             {
@@ -68,23 +56,15 @@ namespace Journal_be.Controllers
                                     where t.Id == id
                                     select new
                                     {
-                                        t.Id, t.Status, PaymentId = p.Id, p.Method, p.UserId, u.UserName,
-                                        UserFirstName = u.FirstName, UserLastName = u.LastName
+                                        t.Id, t.Status, PaymentId = p.Id, t.Description, t.CreatedDate, t.ArticleId, 
+                                        p.Method, p.UserId, u.UserName, UserFirstName = u.FirstName, 
+                                        UserLastName = u.LastName
                                     }).FirstOrDefault();
 
                 if (transaction == null)
                     return await Task.FromResult(NotFound(new { Status = "Fail", Message = "transaction is not exist" }));
 
-
-                var transactionDetails = (from td in _journalContext.TblTransactionDetails
-                                            select new
-                                            {
-                                                td.Id, td.Name, td.Description, td.Status, td.CreatedTime,
-                                                td.TransactionId, td.ArticleId
-                                            }).ToList();
-                object model = new { transaction, transactionDetails };
-
-                return await Task.FromResult(Ok(model));
+                return await Task.FromResult(Ok(transaction));
             }
             catch (Exception e)
             {
@@ -99,6 +79,7 @@ namespace Journal_be.Controllers
             try
             {
                 _journalContext.TblTransactions.Add(transaction);
+                transaction.CreatedDate = DateTime.UtcNow.AddHours(7);
                 await _journalContext.SaveChangesAsync();
 
                 return Ok(new { Status = "Success", Message = "Create Successful" });
@@ -108,6 +89,28 @@ namespace Journal_be.Controllers
                 return StatusCode(500, e.Message);
             }
 
+        }
+
+        [HttpPost("check")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult> GetTransactionById(CheckEntity check)
+        {
+            try
+            {
+                var transaction = (from t in _journalContext.TblTransactions
+                                  join p in _journalContext.TblPayments on t.PaymentId equals p.Id
+                                  where t.ArticleId == check.ArticleId && p.UserId == check.UserId
+                                  select new { t.ArticleId, p.UserId }).FirstOrDefault();
+
+                if (transaction != null)
+                    return await Task.FromResult(Ok(new { Status = "Success", Message = "User bought this article" }));
+                else
+                    return await Task.FromResult(Ok(new { Status = "Fail", Message = "This user did not buy this article" }));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

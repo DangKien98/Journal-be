@@ -8,7 +8,7 @@ namespace Journal_be.Models
     {
         public TblArticle()
         {
-            TblTransactionDetails = new HashSet<TblTransactionDetail>();
+            TblTransactions = new HashSet<TblTransaction>();
         }
         [JsonIgnore]
         public int Id { get; set; }
@@ -32,6 +32,6 @@ namespace Journal_be.Models
         [JsonIgnore]
         public virtual TblUser? User { get; set; }
         [JsonIgnore]
-        public virtual ICollection<TblTransactionDetail> TblTransactionDetails { get; set; }
+        public virtual ICollection<TblTransaction> TblTransactions { get; set; }
     }
 }

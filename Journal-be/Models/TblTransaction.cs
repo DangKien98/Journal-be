@@ -6,17 +6,18 @@ namespace Journal_be.Models
 {
     public partial class TblTransaction
     {
-        public TblTransaction()
-        {
-            TblTransactionDetails = new HashSet<TblTransactionDetail>();
-        }
         [JsonIgnore]
         public int Id { get; set; }
         public int? Status { get; set; }
         public int? PaymentId { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        [JsonIgnore]
+        public DateTime? CreatedDate { get; set; }
+        public int? ArticleId { get; set; }
+        [JsonIgnore]
+        public virtual TblArticle? Article { get; set; }
         [JsonIgnore]
         public virtual TblPayment? Payment { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<TblTransactionDetail> TblTransactionDetails { get; set; }
     }
 }

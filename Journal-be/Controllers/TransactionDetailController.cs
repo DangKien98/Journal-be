@@ -1,4 +1,4 @@
-﻿using Journal_be.EndPointController;
+﻿/*using Journal_be.EndPointController;
 using Journal_be.Entities;
 using Journal_be.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -60,3 +60,4 @@ namespace Journal_be.Controllers
         }
     }
 }
+*/

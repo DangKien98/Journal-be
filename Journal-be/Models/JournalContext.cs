@@ -22,7 +22,6 @@ namespace Journal_be.Models
         public virtual DbSet<TblPayment> TblPayments { get; set; } = null!;
         public virtual DbSet<TblRole> TblRoles { get; set; } = null!;
         public virtual DbSet<TblTransaction> TblTransactions { get; set; } = null!;
-        public virtual DbSet<TblTransactionDetail> TblTransactionDetails { get; set; } = null!;
         public virtual DbSet<TblUser> TblUsers { get; set; } = null!;
         public virtual DbSet<TestFile> TestFiles { get; set; } = null!;
         public virtual DbSet<UserEntity> UserEntities { get; set; } = null!;
@@ -49,7 +48,7 @@ namespace Journal_be.Models
                 entity.HasIndex(e => e.UserId, "tblArticle_tblUser_Id_fk");
 
                 entity.Property(e => e.ArtFile)
-                    .HasColumnType("blob")
+                    .HasColumnType("mediumblob")
                     .HasColumnName("artFile");
 
                 entity.Property(e => e.ArtFileName)
@@ -120,40 +119,25 @@ namespace Journal_be.Models
             {
                 entity.ToTable("tblTransaction");
 
+                entity.HasIndex(e => e.ArticleId, "tblTransaction_tblArticle_Id_fk");
+
                 entity.HasIndex(e => e.PaymentId, "tblTransaction_tblPayment_Id_fk");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasColumnType("text");
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.HasOne(d => d.Article)
+                    .WithMany(p => p.TblTransactions)
+                    .HasForeignKey(d => d.ArticleId)
+                    .HasConstraintName("tblTransaction_tblArticle_Id_fk");
 
                 entity.HasOne(d => d.Payment)
                     .WithMany(p => p.TblTransactions)
                     .HasForeignKey(d => d.PaymentId)
                     .HasConstraintName("tblTransaction_tblPayment_Id_fk");
-            });
-
-            modelBuilder.Entity<TblTransactionDetail>(entity =>
-            {
-                entity.ToTable("tblTransactionDetail");
-
-                entity.HasIndex(e => e.ArticleId, "tblTransactionDetail_tblArticle_Id_fk");
-
-                entity.HasIndex(e => e.TransactionId, "tblTransactionDetail_tblTransaction_Id_fk");
-
-                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
-
-                entity.Property(e => e.Description).HasColumnType("text");
-
-                entity.Property(e => e.Name)
-                    .HasMaxLength(50)
-                    .UseCollation("utf8mb3_general_ci")
-                    .HasCharSet("utf8mb3");
-
-                entity.HasOne(d => d.Article)
-                    .WithMany(p => p.TblTransactionDetails)
-                    .HasForeignKey(d => d.ArticleId)
-                    .HasConstraintName("tblTransactionDetail_tblArticle_Id_fk");
-
-                entity.HasOne(d => d.Transaction)
-                    .WithMany(p => p.TblTransactionDetails)
-                    .HasForeignKey(d => d.TransactionId)
-                    .HasConstraintName("tblTransactionDetail_tblTransaction_Id_fk");
             });
 
             modelBuilder.Entity<TblUser>(entity =>
