@@ -67,6 +67,32 @@ namespace Journal_be.Controllers
             }
         }
 
+        [HttpGet("user/{id}")]
+        [Authorize(Roles = "Admin, User")]
+        public async Task<ActionResult> GetPaymentByUserId(int id)
+        {
+            try
+            {
+                var payments = (from p in _journalContext.TblPayments
+                            join u in _journalContext.TblUsers on p.UserId equals u.Id
+                            where p.UserId == id
+                            select new
+                            {
+                                p.Id, p.Method, p.Status, p.UserId, u.UserName, UserFirstName = u.FirstName,
+                                UserLastName = u.LastName
+                            }).ToList();
+
+                if (payments == null)
+                    return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No Payment is not found for this user" }));
+
+                return await Task.FromResult(Ok(payments));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> CreatePayment(TblPayment payment)
