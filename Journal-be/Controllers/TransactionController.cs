@@ -73,7 +73,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> CreateTransaction(TblTransaction transaction)
         {
             try
@@ -92,7 +92,7 @@ namespace Journal_be.Controllers
         }
 
         [HttpPost("check")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> GetTransactionById(CheckEntity check)
         {
             try
