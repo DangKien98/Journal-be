@@ -80,7 +80,7 @@ namespace Journal_be.Controllers
                             {
                                 p.Id, p.Method, p.Status, p.UserId, u.UserName, UserFirstName = u.FirstName,
                                 UserLastName = u.LastName
-                            }).ToList();
+                            }).FirstOrDefault();
 
                 if (payments == null)
                     return await Task.FromResult(NotFound(new { Status = "Fail", Message = "No Payment is not found for this user" }));
